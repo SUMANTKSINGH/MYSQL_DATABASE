@@ -1,0 +1,490 @@
+SELECT * FROM moviesdb.movies;
+set sql_safe_updates =0;
+ALTER TABLE movies AUTO_INCREMENT=1;
+select * from financials;
+select title ,industry from movies;
+select title ,industry from movies where industry='Bollywood';
+select industry,count(*) from movies where industry='hollywood';
+select distinct industry from movies;
+select  count(distinct industry)  from movies;
+#wildcard search
+select * from movies where title like '%thor%';
+select * from movies where title like '%america%';
+select * from movies;
+select * from movies where studio="";
+#Exercise - Retrieve Data Using Text Query (SELECT, WHERE, DISTINCT, LIKE)
+#Write SQL queries for the following:
+#1. Print all movie titles and release year for all Marvel Studios movies.
+select * from movies;
+select title,release_year from movies where studio="marvel studios";
+#2. Print all movies that have Avenger in their name.
+select * from movies where title like "%avenger%";
+#3. Print the year when the movie "The Godfather" was released.
+select * from movies;
+select release_year from movies where title="the godfather";
+#4. Print all distinct movie studios in the Bollywood industry.
+select distinct studio from movies where industry='bollywood'; 
+
+select * from movies where imdb_rating >=9;
+select * from movies where imdb_rating <5;
+select * from movies where imdb_rating  >=6 and imdb_rating<=8;
+select * from movies where imdb_rating  between 6 and 8;
+select * from movies where release_year=2022 or release_year=2019 or release_year=2018;
+select * from movies where release_year in (2022 ,2019 ,2018);
+select * from movies where studio in ( 'zee studios' ,'marvel studios');
+select  title,studio from movies where studio in ( 'zee studios' ,'marvel studios');
+select  * from movies where imdb_rating is null;
+select  * from movies where studio is null ;
+select * from movies where studio is null or studio=''; #remember= here blank space in studio not written null like imdb_rating.
+select * from movies where industry='bollywood' order by imdb_rating  desc limit 5 offset 1;
+select * from movies where industry='hollywood' order by imdb_rating  desc limit 5 offset 4;
+#Exercise - Retrieve Data Using Numeric Query (BETWEEN, IN, ORDER BY, LIMIT, OFFSET)
+#Write SQL queries for the following:
+
+#1. Print all movies in the order of their release year (latest first)
+select* from movies;
+select * from movies order by release_year desc ;
+
+select title,release_year from movies order by release_year desc ;
+#2. All movies released in the year 2022
+select * from movies where release_year=2022;
+select title ,release_year from movies where release_year=2022;
+#3. Now all the movies released after 2020
+select title ,release_year from movies where release_year>2020;
+#4. All movies after the year 2020 that have more than 8 rating
+select title ,release_year from movies where release_year>2020 and imdb_rating>8;
+select * from movies where release_year>2020 and imdb_rating>8;
+#5. Select all movies that are by Marvel studios and Hombale Films
+select * from movies where studio in ('marvel studios','hombale films');
+#6. Select all THOR movies by their release year
+select title ,release_year from movies where title like '%thor%';
+select title ,release_year from movies where title like '%thor%'  order by release_year asc;
+#7. Select all movies that are not from Marvel Studios
+select * from movies where studio !='marvel studios';
+
+
+select industry,count(*) from movies  group by industry;
+select count(*) from movies where industry='bollywood';
+select max(imdb_rating) from movies where industry='bollywood';
+select min(imdb_rating) from movies where industry='bollywood';
+select avg(imdb_rating) from movies where studio='marvel studios';
+select round(avg(imdb_rating),2) from movies where studio='marvel studios';
+select min(imdb_rating) as min_rating,
+max(imdb_rating) as max_rating,
+ round(avg(imdb_rating),2) as avg_rating
+ from movies where studio='marvel studios';
+ 
+ select studio ,count(*) from movies group by studio ; 
+ select studio ,count(industry) as cnt from movies group by studio order by cnt desc ; 
+ select	 industry,count(industry) as cnt,
+ round(avg(imdb_rating),2) as avg_rating
+ from movies group by industry order by cnt desc;
+ select studio ,count(studio) as cnt,
+ round(avg(imdb_rating),1) as avg_rating
+ from movies where studio !=""
+ group by studio order by avg_rating desc;
+ #standard deviation
+ select round(STDDEV(imdb_rating),2) from  movies;
+ 
+#Exercise - Summary Analytics (MIN, MAX, AVG, GROUP BY)
+#Exercise - Summary analytics (MIN, MAX, AVG, GROUP BY)
+
+#1. How many movies were released between 2015 and 2022
+select * from movies;
+select  count(*) as cnt from movies where release_year between 2015 and 2022  ;
+select count(*)
+   from movies 
+   where release_year between 2015 and 2022;
+#2. Print the max and min movie release year
+select max(release_year) as max_year,
+min(release_year) as min_year
+from movies ;
+#3. Print a year and how many movies were released in that year starting with the latest year;
+select release_year,count(*) as movie_count
+from movies  group by release_year order by  release_year desc;
+#Module: HAVING Clause
+
+#-- Print all the years where more than 2 movies were released
+	# from-where-group by-having-order by
+    SELECT 
+           release_year, 
+           count(*) as movies_count
+	FROM movies 
+    #where imdb_rating>5
+	GROUP BY release_year
+	HAVING movies_count>2
+	ORDER BY movies_count DESC;
+    
+    #Calculated Columns (IF, CASE, YEAR, CURYEAR)
+    select * from actors;
+    select year(curdate());
+    select curdate();
+    SELECT CURRENT_TIMESTAMP();
+
+    SELECT YEAR(CURDATE())-birth_year from actors;
+    select *,(year(curdate())-birth_year) as age from actors;
+    SELECT CURRENT_TIMESTAMP() ;
+
+
+select * from financials;
+select *,(revenue-budget) as profit from financials order by profit desc limit 5;
+select *, 
+if(currency='USD',revenue*82.2160,revenue) as revenu_inr
+ from financials   ;
+ 
+ select distinct unit from financials;
+ 
+ 
+#let's convert into million
+ #billion=rev*1000=million
+ #thousand=rev/1000=million
+ #million=rev(given)
+ 
+ select * from financials;
+ #this is perfect
+ select *,
+ case
+ when unit='billions' then revenue*1000
+ when unit='thousand' then revenue/1000
+ else revenue
+ end as revenue_mln
+ from financials;
+ #this is not best way to write it
+ select *,
+ case
+ when unit='billions' then revenue*1000
+ when unit='thousand' then revenue/1000
+ when unit='millions' then revenue
+ end as revenue_mln
+ from financials;
+ 
+ #Write SQL queries for the following,
+
+#1. Print profit % for all the movies
+select * from financials;
+ select budget,revenue,round((revenue-budget)/budget*100,2) as profit_per from  financials order by profit_per desc;
+ 
+SELECT count(distinct imdb_rating), STDDEV(imdb_rating) from movies;
+ 
+SELECT * from movies WHERE (movie_id %3) = 1;
+
+#JOIN
+# here 	LEFT OUTER JOIN,RIGHT OUTER JOIN,FULL OUTER JOIN WE CAN WRITE BUT SPACE SAVING REASON WE DON'T WRITE.
+select * from financials;
+select * from movies;
+ 
+select movies.movie_id,title,industry,budget,revenue,currency,unit 
+from movies
+join financials
+ on movies.movie_id=financials.movie_id;
+
+select m.movie_id,title,industry,budget,revenue,currency,unit 
+from movies m
+join financials f
+ on m.movie_id=f.movie_id;
+
+ #inner join
+ #Remember: Default Join of SQL is INNER JOIN.
+ select m.movie_id,title,industry,budget,revenue,currency,unit 
+from movies m
+inner join financials f
+ on m.movie_id=f.movie_id;
+
+#left join
+  select m.movie_id,title,industry,budget,revenue,currency,unit 
+from movies m
+left join financials f
+ on m.movie_id=f.movie_id;
+ 
+ select m.movie_id,title,industry,budget,revenue,currency,unit 
+from movies m
+left  OUTER  join financials f
+ on m.movie_id=f.movie_id;
+
+#right join
+  select m.movie_id,title,industry,budget,revenue,currency,unit 
+from movies m
+right join financials f
+ on m.movie_id=f.movie_id;
+# f.movie_id(concentrate).
+ select f.movie_id,title,industry,budget,revenue,currency,unit 
+from movies m
+right join financials f
+ on m.movie_id=f.movie_id;
+ #outer join is not valid in mysql.
+ #how to perform  full join in mysql(most important)
+ # here column number and name from both table should be same.
+ select m.movie_id,title,industry,budget,revenue,currency,unit 
+from movies m
+left join financials f
+ on m.movie_id=f.movie_id 
+ 
+ union 
+ 
+ select f.movie_id,title,industry,budget,revenue,currency,unit 
+from movies m
+right join financials f
+ on m.movie_id=f.movie_id;
+ 
+ #USING
+ 
+ select movie_id,title,industry,budget,revenue,currency,unit 
+from movies m
+right join financials f
+using(movie_id);
+
+select movie_id,title,industry,budget,revenue,currency,unit 
+from movies m
+left join financials f
+using(movie_id);
+
+#Write SQL queries for the following,
+
+#1. Show all the movies with their language names.
+select * from languages;
+select * from movies;
+select m.title,l.name,industry,release_year 
+from movies m
+ join  languages l 
+using(language_id);
+
+#OR (YOU CAN WRITE)
+
+select  movie_id,m.language_id,title,industry,release_year 
+from movies m
+left join  languages l 
+on m.language_id=l.language_id;
+
+#2. Show all Telugu movie names (assuming you don't know the language id for Telugu)
+select  movie_id,m.language_id,NAME,title,industry,release_year 
+from languages l
+left  join movies m 
+on m.language_id=l.language_id  where l.name ='telugu';
+#3. Show the language and number of movies released in that language
+select  movie_id,m.language_id,name,title,industry,release_year 
+from movies m
+left join  languages l 
+on m.language_id=l.language_id;
+
+SELECT 
+            l.name, 
+            COUNT(m.movie_id) as no_movies
+	FROM languages l
+	LEFT JOIN movies m USING (language_id)        
+	GROUP BY language_id
+	ORDER BY no_movies DESC;
+    
+#CROSS JOIN
+select * from movies;
+select * from financials;
+  SELECT m.title  ,concat(industry," - ",release_year) as full_name ,unit,
+(revenue-budget) as total_profit
+ FROM movies m
+ cross join financials f
+ using(movie_id) ;
+    
+#ANALYTICS ON TABLE;
+select m.movie_id,title,budget,revenue,currency,unit,
+case
+ when unit='thousand' then round((revenue-budget)/1000,1)
+ when unit='billions' then round((revenue-budget)*1000,1)
+ else round((revenue-budget),1)
+ end as profit_mln
+ from movies m
+ join financials f 
+ on m.movie_id=f.movie_id
+ where industry="bollywood"
+  order by profit_mln desc;
+
+#JOINS MORE THAN TWO TABLES:
+select * from movies;
+select * from movie_actor;
+select  * from actors;
+
+ select  m.title ,group_concat(a.name separator " | " ) as actors ,industry,studio
+ from movies m 
+ join movie_actor ma on ma.movie_id=m.movie_id
+join actors a on a.actor_id=ma.actor_id
+group by m.movie_id;
+
+select  a.name ,group_concat(m.title separator " | " ) as movies,
+count(m.title) as movie_count
+ from actors a  
+ join movie_actor ma on ma.actor_id=a.actor_id
+join movies m  on m.movie_id=ma.movie_id
+group by a.actor_id
+order by movie_count desc ;
+
+#Write SQL queries for the following,
+
+#1. Generate a report of all Hindi movies sorted by their revenue amount in millions.
+#Print movie name, revenue, currency, and unit
+select * from movies;
+select * from financials;
+select  * from languages;
+ 
+select	 m.title,currency,unit,f.revenue ,
+case
+ when unit='thousand' then round(revenue/1000,1)
+ when unit='billions' then round(revenue*1000,1)
+ else round(revenue,1)
+ end as revenue_mln
+from movies m 
+join financials f on f.movie_id=m.movie_id
+join languages l on l.language_id=m.language_id
+where l.name='hindi' 
+order by revenue_mln desc;
+
+#complex quries:
+#subqueries
+select * from movies order by imdb_rating desc limit 1; 
+select * from movies order by imdb_rating=9.3; 
+select * from movies where imdb_rating in (1.9,9.3);
+#return a single value
+select * from movies where imdb_rating=(select max(imdb_rating) from movies); 
+#return a list of value
+select * from movies where imdb_rating in ((select max(imdb_rating) from movies),
+(select min(imdb_rating) from movies)); 
+#return a table or number of rows
+#Q3 select all the actors whose age >75 and <85.
+select * from actors;
+select * from
+ (select  name, year(curdate())-birth_year as age from actors) as actors_age 
+ where age between 75 and 85 order by age desc;
+ 
+ # ANY,ALL OPERATORS
+ #select avtors who acted in any of these  movies(101,110,121)?
+ select * from movie_actor;
+ select * from actors;
+ 
+ select * from actors where actor_id in (
+ select actor_id from movie_actor where movie_id in(101,110,121));
+ #using ANY operator
+ select * from actors where actor_id =any (
+ select actor_id from movie_actor where movie_id in(101,110,121));
+ #select all movies whose whose Rating is greater than  *ANY* of the MARVEL MOVIES rating.
+ select * from movies where imdb_rating = any(
+ select imdb_rating from movies where studio="marvel studios");
+ 
+  select * from movies where imdb_rating >(
+ select min(imdb_rating) from movies where studio="marvel studios");
+ 
+ select * from movies where imdb_rating > any(
+ select imdb_rating from movies where studio="marvel studios");
+ 
+select * from movies where imdb_rating > some (
+ select imdb_rating from movies where studio="marvel studios");
+ #select all movies whose whose Rating is greater than  *ALL* of the MARVEL MOVIES rating.
+ select * from movies where imdb_rating > all(
+ select imdb_rating from movies where studio="marvel studios");
+ 
+ select * from movies where imdb_rating > (
+ select max(imdb_rating) from movies where studio="marvel studios");
+ #Exercise: Subqueries
+#Write SQL queries for the following,
+
+#1. Select all the movies with minimum and maximum release_year.
+# (Note that there can be more than one movie in min and a max year hence output rows can be more than 2.)
+select * from movies;
+select * from movies where release_year in ((select max(release_year) from movies),
+(select min(release_year) from movies)); 
+
+ 
+    
+#2. Select all the rows from the movies table whose imdb_rating is higher than the average rating
+select * from movies where imdb_rating > (select avg(imdb_rating) from movies);
+ 
+ 
+ #COMMON TABLE EXPRESSION (CTE)
+ 
+#select all the actors whose age >75 and <85.
+#FORMAT(CTE)
+
+#WITH
+#  cte1 AS (SELECT a, b FROM table1),
+# cte2 AS (SELECT c, d FROM table2)
+#SELECT b, d FROM cte1 JOIN cte2
+#WHERE cte1.a = cte2.c;
+
+
+select * from actors;
+select * from
+ (select  name, year(curdate())-birth_year as age from actors) as actors_age 
+ where age between 75 and 85 order by age desc;
+ 
+ with actors_age as(
+ select name  as actor_name,
+ year(curdate())-birth_year as age 
+ from actors)
+ select actor_name,age
+ from actors_age
+ where age >70 and age<85;
+ #Q. 
+ # movie that produced 500%  or more profit  and their rating was less than avg rating for  all movies
+  # movie that produced 500% profit 
+  select * from financials;
+  select *,
+  (revenue-budget)*100/budget as profit_pct
+  from financials
+  where (revenue-budget)*100/budget>=500;
+  
+
+  #their rating was less than avg rating for  all movies
+ select * from movies;
+ select avg(imdb_rating) from movies;
+ 
+ select *  from movies where imdb_rating < 
+ (select avg(imdb_rating) from movies);
+ 
+ #combine these two table to get result
+ select x.movie_id,x.profit_pct,
+		y.title, y.imdb_rating
+ from 
+ (  select *,
+  (revenue-budget)*100/budget as profit_pct
+  from financials) x
+  join( select *  from movies where imdb_rating < 
+ (select avg(imdb_rating) from movies)) y
+ on x.movie_id=y.movie_id
+ where profit_pct >=500;
+  # to find THIS RESULT  with the help of CTE
+ with 
+	x as (
+    select *,
+  (revenue-budget)*100/budget as profit_pct
+  from financials),
+	y as (select *  from movies where imdb_rating < 
+ (select avg(imdb_rating) from movies))
+select x.movie_id,x.profit_pct,
+		y.title, y.imdb_rating
+from x join y
+on x.movie_id=y.movie_id
+ where profit_pct >=500;
+ 
+ #BENEFITS OF CTE
+ #simple queries.(Query readability)
+ #same resultset can be referenced multiple times(Query Reusability)
+ #gives Potential for candidates views (visibility for creating Data Views). A DATA TRANSFORMED VERSION OF THE TABLE.
+ 
+ 
+ #Exercise: CTE
+#Write SQL queries for the following,
+
+#Q. Select all Hollywood movies released after the year 2000 that made more than 500 million $ profit or more profit.
+# Note that all Hollywood movies have millions as a unit hence you don't need to do the unit conversion. 
+#Also, you can write this query without CTE as well but you should try to write this using CTE only
+ select * from movies;
+ select * from movies where release_year > 2000 and industry='Hollywood';
+ select * from financials;
+ select *,
+  (revenue-budget)*100/budget as profit_pct
+  from financials
+  where (revenue-budget)*100/budget>=500;
+  #using CTE
+  with cte as (select title, release_year, (revenue-budget) as profit
+			from movies m
+			join financials f
+			on m.movie_id=f.movie_id
+			where release_year>2000 and industry="hollywood"
+	)
+	select * from cte where profit>500;
